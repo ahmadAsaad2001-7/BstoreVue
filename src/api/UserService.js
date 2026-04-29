@@ -1,6 +1,5 @@
-// utils/auth.js
+// src/api/UserService.js - CLEAN VERSION FOR COOKIE AUTH
 import axios from "axios";
-
 
 const api = axios.create({
   baseURL: "http://localhost:5161/api",
@@ -11,73 +10,76 @@ const api = axios.create({
   timeout: 8000,
   withCredentials: true, 
 });
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('authToken');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-}, (error) => {
-  return Promise.reject(error);
-});
 
 export const Login = async (email, password) => {
   console.log("Attempting login with email:", email);
   try {
     const response = await api.post("/user/login", { email, password });
     console.log("Login successful:", response.data);
-   
-    return response.data;
+    return response.data; // Cookie is handled by browser
   } catch (error) {
     console.error("Login failed:", error.response?.data || error.message);
     throw error;
   }   
 };
 
-export const Logout = async () => {
-  console.log("Logging out...");
+
+export const Register = async (userData) => {
+  console.log("Attempting registration:", userData.email);
+  try {
+    const response = await api.post("/user/register", {
+      email: userData.email,
+      password: userData.password,
+      userName: userData.userName?.trim() || undefined,
+      Name: userData.Name?.trim() || undefined,
+      imageUrl: userData.imageUrl?.trim() || undefined
+    });
+    console.log("Registration successful:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Registration failed:", error.response?.data || error.message);
+    throw error; 
+  }
+};
+
+
+export const applyForVendor = async () => {
+  console.log("Applying for vendor role...");
   try {
    
-    await api.post("/api/auth/logout"); 
-    
-
-    localStorage.removeItem('user'); 
-    
-    console.log("Logout successful");
-    return true;
+    const response = await api.post("/user/apply-for-vendor"); 
+    console.log("Application submitted:", response.data);
+    return response.data; 
   } catch (error) {
-    console.error("Logout failed:", error.message);
-    
-    window.location.href = '/login';
+    console.error("Failed to apply for vendor:", error.response?.data || error.message);
     throw error;
   }
+};
+export const Logout = async () => {
+  await api.post("/user/logout"); 
 };
 
 
 export const IsAuthenticated = async () => {
   try {
     const response = await api.get("/user/check-auth");
-    
     return {
       authenticated: true,
       user: response.data.user 
     };
   } catch (error) {
-    
     if (error.response?.status === 401 || error.response?.status === 403) {
       return { authenticated: false, user: null };
     }
-
     console.error("Auth check failed:", error.message);
     return { authenticated: false, user: null };
   }
 };
 
+
 export const ProfileInfo = async (id) => {
-  console.log("Fetching user info...");
   try {
     const response = await api.get(`/user/${id}`);
-    console.log("User info fetched:", response.data);
     return response.data;
   } catch (error) {
     console.error("Failed to fetch user info:", error.response?.data || error.message);
@@ -87,18 +89,12 @@ export const ProfileInfo = async (id) => {
 
 
 export const myInfo = async () => {
-  console.log("Fetching my info...");
   try {
-    
     const response = await api.get("/user/myinfo");
-    console.log("My info fetched:", response.data);
     return response.data; 
   } catch (error) {
     console.error("Failed to fetch my info:", error.response?.data || error.message);
-    
-    // Auto-redirect on auth errors
     if (error.response?.status === 401 || error.response?.status === 403) {
-      localStorage.removeItem('user'); 
       window.location.href = '/login';
     }
     throw error;
@@ -108,11 +104,11 @@ export const myInfo = async () => {
 
 export const getCurrentUserId = async () => {
   try {
-    const user = await myInfo();
-    return user?.id;
+    const userData = await myInfo();
+    return userData?.id;
   } catch {
     return null;
   }
 };
 
-export { api }; 
+export { api };

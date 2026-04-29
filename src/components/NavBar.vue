@@ -1,12 +1,29 @@
 <template>
   <nav class="stars-container relative w-full border-b border-gray-700 bg-gray-900 p-4">
   <div class="mx-auto flex max-w-screen-xl items-center justify-between">
-    <a href="/" class="flex items-center gap-2">
-      <img class="h-8 w-8 object-cover rounded" alt="logo" src="https://www.svgrepo.com/show/492788/book-and-person-winter.svg">
-      <span class="font-bold text-white">{{ title }}</span>
-    </a>
+  
 
+     
+              <router-link to="/" class="flex items-center gap-2">
+                <img class="h-8 w-8 object-cover rounded" alt="logo" src="https://www.svgrepo.com/show/492788/book-and-person-winter.svg">
+                <span class="font-bold text-white">{{ title }}</span>
+              </router-link>
+       
+          
+           <router-link 
+          v-if="authStore.isAuthenticated && authStore.user?.roles?.includes('ADMINISTRATOR')"
+          to="/AdminPage" >
+         
+        >
+          <span class=" text-white">
+            <img src="https://www.svgrepo.com/show/492788/book-and-person-winter.svg" alt="img" class="h-4 w-4 inline-block mr-1 "> 
+            لوحة التحكم
+          </span>
+        </router-link>
+      
     <ul class="flex flex-row gap-6">
+    
+
       <li>  <router-link to="/" class="text-xs text-gray-300 hover:text-white">
 الصفحة الرئيسية  </router-link></li>
 
@@ -15,16 +32,15 @@
     عن المصمم
   </router-link>
 </li>
-      <li><a href="#" class="text-xs text-gray-300 hover:text-white">الخدمات</a></li>
 
-      <li v-if="isAuthenticated">
-         <router-link to="/Login" class="text-xs text-gray-300 hover:text-white">
+      <li v-if="authStore.isAuthenticated">
+         <router-link to="/UserPage" class="text-xs text-gray-300 hover:text-white">
     
            <img src="https://www.svgrepo.com/show/301085/desk-classroom.svg" alt="img" class="h-4 w-4 inline-block mr-1 ">
-           المستخدم   
+          {{ authStore.user?.name || 'حسابي' }}
 
          </router-link>
-
+         <span>---</span>
          <span class="text-xs text-gray-300 hover:text-white" @click="handleLogout" style="cursor: pointer;">
            <img src="https://www.svgrepo.com/show/281468/open-door-doorway.svg" alt="img" class="h-4 w-4 inline-block mr-1 ">
            تسجيل الخروج   
@@ -38,6 +54,12 @@
            تسجيل الدخول   
 
          </router-link>
+
+         <router-link to="/register" class="text-xs text-gray-300 hover:text-white ml-4">
+    
+           <img src="https://www.svgrepo.com/show/281468/open-door-doorway.svg" alt="img" class="h-4 w-4 inline-block mr-1 ">
+           إنشاء حساب
+          </router-link>
       </li>
 
     </ul>
@@ -57,46 +79,16 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { IsAuthenticated, Logout } from '../api/UserService'; 
+import { useAuthStore } from '../Stores/Auth';
 
+const authStore = useAuthStore();
 const router = useRouter();
 const route = useRoute(); 
 const title = ref('Book Store');
-const isAuthenticated = ref(false);
-const authLoading = ref(true);
-
-
-const user = ref(null); 
-
-const checkAuth = async () => {
-  authLoading.value = true;
-  try {
-    // If you prefer not making an API call on every single route change, 
-    // you can also just check localStorage here: 
-    // const hasToken = !!localStorage.getItem('authToken');
-    
-    const result = await IsAuthenticated();
-    isAuthenticated.value = result.authenticated;
-    user.value = result.user;
-  } catch {
-    isAuthenticated.value = false;
-    user.value = null;
-  } finally {
-    authLoading.value = false;
-  }
-};
-
-onMounted(checkAuth);
-watch(() => route.fullPath, checkAuth);
 
 const handleLogout = async () => {
-  try {
-    await Logout();
-    isAuthenticated.value = false;
-    user.value = null;
-    router.push('/login');
-  } catch (error) {
-    console.error("Logout error", error);
-  }
+  await authStore.logout();
+  router.push('/login');
 };
+
 </script>

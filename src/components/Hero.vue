@@ -19,7 +19,7 @@
             </div>
         </div>
         <div class="lg:max-w-lg lg:w-full mb-5 md:mb-0 md:w-1/2 w-3/6">
-            <img class="object-cover object-center rounded" alt="hero" src="https://www.svgrepo.com/show/513273/book-opened.svg">
+            <img class="object-cover object-center rounded" alt="hero" src="https://cdn.pixabay.com/photo/2025/07/17/10/16/firefly-9719231_1280.png">
         </div>
     </div>
 </section>
