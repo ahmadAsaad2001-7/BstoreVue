@@ -172,7 +172,7 @@ const handleLogin = async () => {
     const userRole = authStore.user?.roles?.[0] || 'USER';
     
     if (userRole === 'ADMINISTRATOR') {
-      router.replace('/admin/dashboard');
+      router.replace('/userpage');
     } else if (userRole === 'VENDOR') {
       router.replace('/vendor/dashboard');
     } else {

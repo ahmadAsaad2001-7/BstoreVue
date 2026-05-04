@@ -66,11 +66,13 @@
       
 
     <div class="hidden md:block">
-      <input 
-        type="text" 
-        placeholder="Search..." 
-        class="rounded-md border border-gray-600 bg-gray-800 px-3 py-1 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
-      >
+      <div >
+        <router-link to="Search" class="inline-flex items-center  text-white bg-brand hover:bg-brand-strong box-border border border-transparent focus:ring-4 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded-base text-xs px-3 py-1.5 focus:outline-none">
+<svg class="w-3.5 h-3.5 me-1.5 -ms-0.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312"/>
+</svg>
+البحث </router-link>
+      </div>
     </div>
   </div>
 </nav>

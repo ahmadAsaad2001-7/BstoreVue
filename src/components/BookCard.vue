@@ -22,38 +22,36 @@ const handleBuyNow = (bookId) => {
     query: { bookId } // ?bookId=xxx
   })
   
-  // Option B: If you want a cart later:
-  // addToCart(bookId)
-  // router.push('/cart')
+
 }
 </script>
 
 <template>
-  <div class="bg-white rounded-lg overflow-hidden shadow-lg max-w-sm cursor-pointer hover:shadow-xl transition-shadow">
-    <!-- ... image, title, description ... -->
-    
-    <div class="p-4">
-      <h3 class="text-lg font-medium mb-2 truncate">{{ book.name }}</h3>
-     <img :src="book.imageUrl" :alt="book.name" class="w-full h-48 object-cover mb-4 rounded">
+  <div class="group bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 hover:border-blue-500/50 transition-all duration-300 shadow-lg">
+    <div class="relative aspect-[3/4] overflow-hidden bg-gray-800">
+      <img 
+        :src="book.coverUrl || book.imageUrl || '/fallback-book.png'" 
+        :alt="book.title"
+        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+        @error="(e) => e.target.src = 'https://via.placeholder.com/300x400?text=No+Cover'"
+      />
+      <div class="absolute top-3 left-3 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-lg">
+        ${{ book.price }}
+      </div>
+    </div>
 
-      <p class="text-gray-600 text-sm mb-4 line-clamp-2">{{ book.description }}</p>
+    <!-- تفاصيل الكتاب -->
+    <div class="p-4">
+      <h3 class="text-white font-bold text-lg truncate mb-1">{{ book.title || book.name }}</h3>
+      <p class="text-gray-400 text-sm mb-4">{{ book.author }}</p>
       
-      <div class="flex items-center justify-between">
-        <span class="font-bold text-lg">${{ Number(book.price).toFixed(2) }}</span>
-        
-        <!-- ✅ Updated button -->
-        <button 
-          class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition-colors"
-          @click.stop="handleBuyNow(book.id)"
-        >
-          Buy Now
+      <div class="flex gap-2">
+        <button class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-xl text-sm font-bold transition" @click.stop="handleBuyNow(book.id)">
+          شراء الآن
         </button>
-        <button 
-      @click.stop="viewBook"
-      class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
-    >
-      التفاصيل
-    </button>
+        <button class="px-3 bg-gray-800 hover:bg-gray-700 text-gray-300 py-2 rounded-xl text-sm transition" @click.stop="viewBook">
+          التفاصيل
+        </button>
       </div>
     </div>
   </div>

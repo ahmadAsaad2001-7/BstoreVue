@@ -22,4 +22,12 @@ export const GetAllCoupons = async () => {
     throw error;
   }
 };
+export const GetAllUsers = async () => {
+  try {
+    const response = await api.get("admin/users");
+    return response.data; 
+  } catch (err) {
+    console.error("error fetching users ", err);
+    throw err;   }
+}
 

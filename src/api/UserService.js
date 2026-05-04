@@ -1,4 +1,4 @@
-// src/api/UserService.js - CLEAN VERSION FOR COOKIE AUTH
+
 import axios from "axios";
 
 const api = axios.create({
@@ -100,8 +100,38 @@ export const myInfo = async () => {
     throw error;
   }   
 };
+export const GetNearestVendors =async()=>{
+  try{
+  const Vendors=await api.get("/user/GetNearbyVendors")
+  return Vendors.data;
+}catch(error){
+  console.error("failed to fetch the vendors,", error.response?.data||error.message);
+  if(error.response?.status===401||error.response?.status===403){
+    window.location.href='/login';
+  }
+  throw error;
+}
+}
 
+export const GetNearByUsers=async()=>{
+  try{
+  const Users=await api.get("/user/getNearbyUsers")
+  return Users.data;
+}catch(err)
+{
+  throw err;
 
+}}
+export const search = async (content) => {
+  try {
+
+    const response = await api.post("/user/GetSearchResults", { req: content }); 
+    return response.data;
+  } catch (error) {
+    console.error("Search failed:", error.response?.data || error.message);
+    throw error;
+  }
+};
 export const getCurrentUserId = async () => {
   try {
     const userData = await myInfo();
@@ -111,4 +141,4 @@ export const getCurrentUserId = async () => {
   }
 };
 
-export { api };
+export { api }

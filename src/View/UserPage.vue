@@ -153,23 +153,33 @@ const handleReadBook = (bookId) => {
         <p class="text-white text-xs">عدد الكتب</p>
         <p class="text-white text-xl font-bold">{{ validBooks.length }}</p>
       </div>
-    <div class="w-full bg-white/20 rounded-lg p-3 text-center mt-3">
-  <p class="text-xs mb-2">التقديم كبائع</p>
-  
-  <!-- ✅ Show error if exists -->
-  <p v-if="error" class="text-red-400 text-xs mb-2">{{ error }}</p>
-  
-  <button 
-    @click="handleApplyforVendor"
-   
-    class="w-full px-4 py-2 bg-yellow-600 hover:bg-yellow-500 disabled:opacity-50 text-white text-sm rounded-lg transition-colors shadow"
+
+   <div
+    v-if="auth.roles?.includes('VENDOR')"
+    class="w-full bg-white/20 rounded-lg p-3 text-center mt-3"
   >
-    ➕ تقديم الطلب
-  </button>
-</div>
-      
-      <div class="mt-auto w-full h-1 bg-gradient-to-r from-transparent via-white/40 to-transparent rounded-full"></div>
-    </aside>
+    <p class="text-xs mb-2">التقديم كبائع</p>
+    <p v-if="error" class="text-red-400 text-xs mb-2">{{ error }}</p>
+    <button
+      @click="handleApplyforVendor"
+      class="w-full px-4 py-2 bg-yellow-600 hover:bg-yellow-500 disabled:opacity-50 text-white text-sm rounded-lg transition-colors shadow"
+    >
+      ➕ تقديم الطلب
+    </button>
+  </div>
+
+  
+  <div v-else class="mt-3">
+    <router-link to="/AddBook">
+      <button
+        type="button"
+        class="text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center"
+      >
+        ➕ إضافة كتاب
+      </button>
+    </router-link>
+  </div>
+</aside>
 
     <!-- Content Area -->
     <main class="bg-yellow-800 w-[85%] h-full overflow-y-auto p-4 md:p-6 scroll-smooth">

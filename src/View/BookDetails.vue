@@ -202,9 +202,7 @@ const handleBuyNow = () => {
     query: { bookId: book.value.id }
   });
   
-  // Option B: If you have a cart later:
-  // addToCart(book.value.id);
-  // router.push('/cart');
+
 };
 
 // ✅ Optional: Add to wishlist (localStorage for now)

@@ -58,6 +58,29 @@ const router = createRouter({
             path:"/VoteView",
             name:"VoteView",
             component: () => import("../View/VoteView.vue"),
+        },
+        {
+            path:"/AddBook",
+            name:"AddBook",
+            component:()=>import("../View/AddBook.vue")
+
+        },
+        {
+            path:"/Vendors",
+            name:"Vendors",
+            component:()=>import("../View/Vendors.vue")
+
+        },
+        {
+            path:"/Users",
+            name:"Users",
+            component:()=>import("../View/Users.vue")
+
+        },
+        {
+            path:"/Search",
+            name:"Search",
+            component:()=>import("../View/SearchResult.vue")
         }
         
     ]});

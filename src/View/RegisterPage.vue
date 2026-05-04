@@ -146,17 +146,33 @@ const handleRegister = async () => {
     router.push('/login');
   } 
  catch (err) {
- 
-  const backendError = err.response?.data?.error;
+  // ✅ Extract validation errors from ASP.NET Core ProblemDetails format
+  let backendError = 'حدث خطأ أثناء إنشاء الحساب';
   
- 
-  error.value = backendError || err.message || 'حدث خطأ أثناء إنشاء الحساب';
+  if (err.response?.data?.errors) {
+    // ✅ Format field-level errors for display
+    const errors = err.response.data.errors;
+    const errorMessages = Object.entries(errors)
+      .map(([field, messages]) => `${field}: ${Array.isArray(messages) ? messages.join(', ') : messages}`)
+      .join('\n');
+    
+    backendError = errorMessages;
+  } else if (err.response?.data?.error) {
+    backendError = err.response.data.error;
+  } else if (err.response?.data?.title) {
+    backendError = err.response.data.title;
+  } else {
+    backendError = err.message || backendError;
+  }
   
- 
+  // ✅ Show user-friendly error
+  error.value = backendError;
+  
+  // ✅ Log full error for debugging
   console.error('Registration failed:', {
     status: err.response?.status,
-    data: err.response?.data,
-    message: err.message
+    errors: err.response?.data?.errors,
+    fullResponse: err.response?.data
   });
 } finally {
       // TODO: 6. Set isLoading = false in finally block

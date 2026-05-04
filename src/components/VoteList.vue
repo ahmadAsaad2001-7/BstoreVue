@@ -5,11 +5,14 @@ import UserCard from '../components/UserCard.vue';
 
 
 import { fetchAdminVotes, castAdminVote } from '../api/VotesServices'; 
+import {GetAllUsers} from "../api/AdminService"
+
 
 const currentTab = ref('active');
 const loading = ref(false);
 const votes = ref([]);
 const users = ref([]);
+
 
 const filteredVotes = computed(() => {
   if (currentTab.value === 'active') {
@@ -20,12 +23,16 @@ const filteredVotes = computed(() => {
   return [];
 });
 
-// 1. استخدام دالة جلب البيانات الخاصة بك
+
+
+
 const fetchData = async () => {
   loading.value = true;
   try {
+    const fetchedUsers = await GetAllUsers();
+    users.value = fetchedUsers;
     const data = await fetchAdminVotes();
-    // إذا كانت الـ API ترجع النتيجة بداخل Value استخدم: data.value
+  
     votes.value = data.value || data; 
   } catch (error) {
     console.error("Error fetching admin votes:", error);
