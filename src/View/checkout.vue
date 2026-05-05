@@ -39,8 +39,8 @@
               <p class="text-gray-400 text-sm mb-3">{{ book.author }}</p>
               <div class="flex items-center gap-2">
                 <span class="text-2xl font-bold text-yellow-400">${{ Number(book.price).toFixed(2) }}</span>
-                <span v-if="couponDiscount > 0" class="text-sm text-green-400">
-                  (وفر ${{ (book.price * couponDiscount).toFixed(2) }})
+                <span v-if="couponDiscountPercent > 0" class="text-sm text-green-400">
+                  (وفر ${{ (book.price * couponDiscountPercent / 100).toFixed(2) }})
                 </span>
               </div>
             </div>
@@ -76,9 +76,9 @@
             <span>السعر الأصلي:</span>
             <span>${{ Number(book.price).toFixed(2) }}</span>
           </div>
-          <div v-if="couponDiscount > 0" class="flex justify-between text-green-400 mb-2">
+          <div v-if="couponDiscountPercent > 0" class="flex justify-between text-green-400 mb-2">
             <span>الخصم:</span>
-            <span>-${{ (book.price * couponDiscount).toFixed(2) }}</span>
+            <span>-${{ (book.price * couponDiscountPercent / 100).toFixed(2) }}</span>
           </div>
           <div class="flex justify-between text-white font-bold text-lg pt-2 border-t border-gray-700">
             <span>الإجمالي:</span>
@@ -111,7 +111,7 @@
 import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { getBookById } from '../api/BookService';
-import { processPayment } from '../api/PaymentService'; // ✅ Import payment service
+import { processPayment, ValidateCoupon } from '../api/PaymentService';
 
 const route = useRoute();
 const router = useRouter();
@@ -125,8 +125,7 @@ const applyingCoupon = ref(false);
 const couponError = ref(null);
 const couponSuccess = ref(null);
 const isCheckingOut = ref(false);
-
-// Fetch book details on mount
+const couponDiscountPercent = ref(0);
 onMounted(async () => {
   const bookId = route.query.bookId;
   
@@ -147,20 +146,14 @@ onMounted(async () => {
   }
 });
 
-// Calculate discount (client-side only - backend validates on checkout)
-const couponDiscount = computed(() => {
-  if (couponCode.value?.toUpperCase() === 'WELCOME10') {
-    return 0.10;
-  }
-  return 0;
-});
+
 
 const finalPrice = computed(() => {
   if (!book.value) return 0;
-  return book.value.price * (1 - couponDiscount.value);
+  const discount = (book.value.price * (couponDiscountPercent.value / 100));
+  return book.value.price - discount;
 });
 
-// Apply coupon (client-side validation only)
 const applyCoupon = async () => {
   if (!couponCode.value.trim()) return;
   
@@ -168,20 +161,26 @@ const applyCoupon = async () => {
   couponError.value = null;
   couponSuccess.value = null;
   
-  try {
-    if (couponCode.value.toUpperCase() === 'WELCOME10') {
-      couponSuccess.value = 'تم تطبيق الخصم بنجاح! ✅';
-    } else {
-      couponError.value = 'كود الخصم غير صالح';
-    }
+    try {
+    const couponData = await ValidateCoupon(couponCode.value.trim());
+    
+
+    couponDiscountPercent.value = 
+      couponData.discountPercentage  // camelCase (المفضل)
+      || couponData.Discount_percentage  // PascalCase مع underscore
+      || couponData.discount_percentage  // snake_case
+      || 0;
+      
+    couponSuccess.value = `تم تطبيق خصم ${couponDiscountPercent.value}% بنجاح! ✅`;
   } catch (err) {
-    couponError.value = 'فشل التحقق من كود الخصم';
+    couponDiscountPercent.value = 0;
+    couponError.value = typeof err === 'string' ? err : 'كود الخصم غير صالح';
   } finally {
     applyingCoupon.value = false;
   }
 };
 
-// ✅ Handle checkout using PaymentService
+
 const handleCheckout = async () => {
   if (!book.value) return;
   
@@ -189,22 +188,18 @@ const handleCheckout = async () => {
   error.value = null;
   
   try {
-    // 📤 Call PaymentService instead of direct api.post
     const { orderId, checkoutUrl, isFree } = await processPayment(
-      [book.value.id],  // ✅ Array of book IDs
-      couponCode.value  // ✅ Coupon code (service handles null/trim)
+      [book.value.id],  
+      couponCode.value 
     );
     
     if (isFree) {
-      // 🆓 Free order: redirect to success immediately
       router.push(`/payment/success?order_id=${orderId}&free=true`);
     } else {
-      // 💳 Paid order: redirect to Stripe Checkout
       window.location.href = checkoutUrl;
     }
     
   } catch (err) {
-    // ✅ Show user-friendly error from backend or network
     error.value = err.message || 'فشل معالجة الطلب';
     console.error('Checkout error:', err);
   } finally {

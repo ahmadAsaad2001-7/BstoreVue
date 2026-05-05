@@ -163,6 +163,14 @@ const handleReadBook = (bookId) => {
     >
       ➕ تقديم الطلب
     </button>
+      <router-link to="/couponform">
+      <button
+        type="button"
+        class="text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center"
+      >
+        ➕كوبونات
+      </button>
+    </router-link>
   </div>
 
   
@@ -175,7 +183,11 @@ const handleReadBook = (bookId) => {
         ➕ إضافة كتاب
       </button>
     </router-link>
+
+     
+    
   </div>
+  
 </aside>
 
     <!-- Content Area -->

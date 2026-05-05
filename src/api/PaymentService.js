@@ -21,14 +21,13 @@ export const processPayment = async (bookIds, couponCode = null) => {
       couponCode: couponCode?.trim() || null 
     });
     
-    // ✅ The API returns the checkout object directly, so we just return response.data
-    // If the API returns a 400 or 500 error, Axios will automatically throw it to the catch block
+
+
     return response.data;
     
   } catch (error) {
     console.error(`Payment processing failed:`, error);
     
-    // Attempt to extract the C# error message if it exists
     const errorMessage = error.response?.data?.error 
       || error.response?.data 
       || error.message;
@@ -36,6 +35,15 @@ export const processPayment = async (bookIds, couponCode = null) => {
     throw new Error(errorMessage);
   }
 };
-
+export const ValidateCoupon = async (code) => {
+  try {
+    const response = await api.post(`/user/coupons/validate`, {
+       code: code.trim() 
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || "كود الخصم غير صحيح";
+  }
+};
 
 export { api };

@@ -30,4 +30,20 @@ export const GetAllUsers = async () => {
     console.error("error fetching users ", err);
     throw err;   }
 }
-
+export const AddCoupon = async (couponData) => {
+  try {
+    const response = await api.post("/admin/coupons/generate", couponData);
+    return response.data;
+  } catch (error) {
+    console.error("Error adding coupon:", error);
+    throw error;
+  }
+};
+export const GetallCoupons=async()=>{
+  try{
+    const coupons=await api.get("/Admin/coupons") 
+    return coupons.data;
+  }catch(error){
+    console.error("Failed to fetch coupons:", error.response?.data || error.message);
+    throw error;
+  }}  

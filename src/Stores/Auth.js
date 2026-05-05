@@ -31,20 +31,22 @@ const checkAuth = async () => {
     }
   }
 
-  const logout = async () => {
-    try {
-      await Logout()
-    } catch (err) {
-      console.error('Logout API call failed:', err)
-    } finally {
-      isAuthenticated.value = false
-      user.value = null
-    }
+ const logout = async () => {
+  try {
+    await Logout(); 
+  } catch (err) {
+    console.error('Logout API call failed:', err);
+  } finally {
+   
+    isAuthenticated.value = false;
+    user.value = null;
+  
   }
+}
 
 const isVendor = computed(() => {
   const u = user.value;
-  if (!u) return false;s
+  if (!u) return false;
 
   const roleValue = u.role || "";
   const rolesArray = u.roles || [];

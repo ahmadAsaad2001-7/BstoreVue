@@ -81,6 +81,11 @@ const router = createRouter({
             path:"/Search",
             name:"Search",
             component:()=>import("../View/SearchResult.vue")
+        },
+        {
+path:"/couponform",
+name:"CouponForm",
+component:()=>import("../View/couponform.vue")  
         }
         
     ]});
