@@ -136,7 +136,7 @@ const handleReadBook = (bookId) => {
         <img 
           class="h-20 w-20 rounded-full object-cover border-4 border-white/80 shadow-md" 
           alt="user avatar" 
-          :src="auth.user?.avatar || 'https://www.svgrepo.com/show/492788/book-and-person-winter.svg'"
+          :src="auth.user?.imageUrl || 'https://www.svgrepo.com/show/492788/book-and-person-winter.svg'"
         >
         <span class="absolute bottom-0 right-0 h-4 w-4 rounded-full bg-green-500 border-2 border-white" title="نشط"></span>
       </div>
@@ -154,11 +154,8 @@ const handleReadBook = (bookId) => {
         <p class="text-white text-xl font-bold">{{ validBooks.length }}</p>
       </div>
 
-   <div
-    v-if="auth.roles?.includes('VENDOR')"
-    class="w-full bg-white/20 rounded-lg p-3 text-center mt-3"
-  >
-    <p class="text-xs mb-2">التقديم كبائع</p>
+<div v-if="auth.isAuthenticated && !auth.isVendor" class="w-full bg-white/20 rounded-lg p-3 text-center mt-3">
+      <p class="text-xs mb-2">التقديم كبائع</p>
     <p v-if="error" class="text-red-400 text-xs mb-2">{{ error }}</p>
     <button
       @click="handleApplyforVendor"
@@ -192,12 +189,7 @@ const handleReadBook = (bookId) => {
             {{ validBooks.length }} كتاب {{ validBooks.length === 1 ? 'مقتنى' : 'مقتناة' }}
           </p>
         </div>
-        <button 
-          @click="handleAddBook"
-          class="hidden md:flex items-center gap-2 px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-white text-sm rounded-lg transition-colors shadow"
-        >
-          <span>➕</span> إضافة كتاب
-        </button>
+     
       </div>
 
       <!-- Error State -->
@@ -214,7 +206,7 @@ const handleReadBook = (bookId) => {
         <span class="text-5xl mb-3">📭</span>
         <p class="text-white font-medium mb-1">لا توجد كتب في مكتبتك بعد</p>
         <p class="text-yellow-200/80 text-sm mb-4">ابدأ باستكشاف المتجر لإضافة كتبك الأولى</p>
-        <button @click="router.push('/store')" class="px-5 py-2 bg-yellow-600 hover:bg-yellow-500 text-white rounded-lg text-sm transition shadow">
+        <button @click="router.push('/')" class="px-5 py-2 bg-yellow-600 hover:bg-yellow-500 text-white rounded-lg text-sm transition shadow">
           تصفح المتجر
         </button>
       </div>

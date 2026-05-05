@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref ,computed} from 'vue'
+
 import { IsAuthenticated, Logout, myInfo } from '../api/UserService'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -8,23 +9,19 @@ export const useAuthStore = defineStore('auth', () => {
   const loading = ref(true)
   const error = ref(null)
 
-  const checkAuth = async () => {
-    loading.value = true
-    error.value = null
-    try {
-      const result = await IsAuthenticated()
-      isAuthenticated.value = result.authenticated
-      user.value = result.authenticated ? result.user : null
-
-      if (result.authenticated) {
-        try {
-          const profile = await myInfo()
-          user.value = { ...user.value, ...profile }
-        } catch (e) {
-          console.warn('Could not fetch full profile:', e)
-        }
-      }
-    } catch (err) {
+const checkAuth = async () => {
+  loading.value = true;
+  try {
+    const result = await IsAuthenticated();
+    isAuthenticated.value = result.authenticated;
+    
+    if (result.authenticated) {
+      const profile = await myInfo();
+ 
+      user.value = { ...result.user, ...profile }; 
+      console.log("Current User Data:", user.value); 
+    }
+  } catch (err) {
       console.error('Auth check failed:', err)
       isAuthenticated.value = false
       user.value = null
@@ -45,6 +42,15 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+const isVendor = computed(() => {
+  const u = user.value;
+  if (!u) return false;s
+
+  const roleValue = u.role || "";
+  const rolesArray = u.roles || [];
+
+  return roleValue === 'VENDOR' || rolesArray.includes('VENDOR');
+});
 
   checkAuth()
 
@@ -54,6 +60,7 @@ export const useAuthStore = defineStore('auth', () => {
     loading,
     error,
     checkAuth,
-    logout
+    logout,
+    isVendor
   }
 })

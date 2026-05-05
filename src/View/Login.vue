@@ -174,7 +174,7 @@ const handleLogin = async () => {
     if (userRole === 'ADMINISTRATOR') {
       router.replace('/userpage');
     } else if (userRole === 'VENDOR') {
-      router.replace('/vendor/dashboard');
+      router.replace('/UserPage');
     } else {
       router.replace('/'); // Default home page
     }
