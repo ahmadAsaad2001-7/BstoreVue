@@ -3,7 +3,7 @@ import axios from "axios";
 import { GENRES } from '../constants/genres.js';
 
 const api = axios.create({
-  baseURL: " http://yellowblueredbookstoreapi.runasp.net/api/", 
+  baseURL: "http://yellowblueredbookstoreapi.runasp.net/api/", 
   headers: { 
     "Content-Type": "application/json",
     "Accept": "application/json"
@@ -35,7 +35,6 @@ export const getBookById = async (id) => {
 };
 
 export const addBook = async (bookData) => {
-  // 🔍 Debug: Log what we're sending
   console.log('📤 addBook called with:', {
     baseURL: api.defaults.baseURL,
     endpoint: "Vendor/sellbook",

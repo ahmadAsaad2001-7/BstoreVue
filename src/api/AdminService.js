@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: " http://yellowblueredbookstoreapi.runasp.net/api",
+  baseURL: "http://yellowblueredbookstoreapi.runasp.net/api",
   headers: { "Content-Type": "application/json" },
   timeout: 8000,
   withCredentials: false,
