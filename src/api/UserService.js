@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:5161/api",
+  baseURL: " http://yellowblueredbookstoreapi.runasp.net/api",
   headers: { 
     "Content-Type": "application/json",
     "Accept": "application/json"
@@ -16,7 +16,7 @@ export const Login = async (email, password) => {
   try {
     const response = await api.post("/user/login", { email, password });
     console.log("Login successful:", response.data);
-    return response.data; // Cookie is handled by browser
+    return response.data; 
   } catch (error) {
     console.error("Login failed:", error.response?.data || error.message);
     throw error;
