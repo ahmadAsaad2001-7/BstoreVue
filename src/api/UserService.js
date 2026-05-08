@@ -140,6 +140,3 @@ export const getCurrentUserId = async () => {
     return null;
   }
 };
-
-
-export { api }
