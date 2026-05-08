@@ -28,7 +28,7 @@ const router = createRouter({
         {
         path: "/checkout",
         name: "Checkout",
-        component: () => import("../View/Checkout.vue"),
+        component: () => import("../View/checkout.vue"),
         props: true, 
         meta: { requiresAuth: true } 
         },
