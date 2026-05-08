@@ -1,7 +1,7 @@
 
 import axios from "axios";
 
-const api = axios.create({
+export const api = axios.create({
   baseURL: "http://yellowblueredbookstoreapi.runasp.net/api",
   headers: { 
     "Content-Type": "application/json",
