@@ -10,9 +10,9 @@ export const Login = async (email, password) => {
     const response = await api.post("/user/login", { email, password });
     console.log("Login successful:", response.data);
     
-    // Store user data if returned (token handled by cookies via withCredentials)
-    if (response.data.user) {
-      localStorage.setItem('authUser', JSON.stringify(response.data.user));
+    // Store user data from response (API returns userId, userName, email at root level)
+    if (response.data) {
+      localStorage.setItem('authUser', JSON.stringify(response.data));
     }
     
     return response.data; 

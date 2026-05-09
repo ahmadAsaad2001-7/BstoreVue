@@ -166,8 +166,8 @@ const handleLogin = async () => {
 
     const response = await Login(email.value, password.value);
     
-
-    await authStore.checkAuth();
+    // Set user directly from login response
+    authStore.setUserFromLogin(response);
     
     const userRole = authStore.user?.roles?.[0] || 'USER';
     

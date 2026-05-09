@@ -37,6 +37,15 @@ const checkAuth = async () => {
     }
   }
 
+// Set user from login response (direct authentication without API call)
+const setUserFromLogin = (userData) => {
+  isAuthenticated.value = true;
+  user.value = userData;
+  localStorage.setItem('authUser', JSON.stringify(userData));
+  console.log("User logged in:", user.value);
+  loading.value = false;
+}
+
  const logout = async () => {
   try {
     await Logout(); 
@@ -46,7 +55,6 @@ const checkAuth = async () => {
    
     isAuthenticated.value = false;
     user.value = null;
-    localStorage.removeItem('authToken');
     localStorage.removeItem('authUser');
   
   }
@@ -70,6 +78,7 @@ const isVendor = computed(() => {
     loading,
     error,
     checkAuth,
+    setUserFromLogin,
     logout,
     isVendor
   }
