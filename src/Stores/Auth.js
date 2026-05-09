@@ -12,6 +12,16 @@ export const useAuthStore = defineStore('auth', () => {
 const checkAuth = async () => {
   loading.value = true;
   try {
+    // Check if token exists in localStorage
+    const token = localStorage.getItem('authToken');
+    
+    if (!token) {
+      isAuthenticated.value = false;
+      user.value = null;
+      loading.value = false;
+      return;
+    }
+
     const result = await IsAuthenticated();
     isAuthenticated.value = result.authenticated;
     
@@ -19,13 +29,19 @@ const checkAuth = async () => {
       const profile = await myInfo();
  
       user.value = { ...result.user, ...profile }; 
+      localStorage.setItem('authUser', JSON.stringify(user.value));
       console.log("Current User Data:", user.value); 
+    } else {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('authUser');
     }
   } catch (err) {
       console.error('Auth check failed:', err)
       isAuthenticated.value = false
       user.value = null
       error.value = err.message
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('authUser');
     } finally {
       loading.value = false
     }
@@ -40,6 +56,8 @@ const checkAuth = async () => {
    
     isAuthenticated.value = false;
     user.value = null;
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('authUser');
   
   }
 }

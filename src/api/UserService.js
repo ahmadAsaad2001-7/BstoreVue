@@ -1,21 +1,24 @@
 
-import axios from "axios";
+import api from './axios.js';
 
-export const api = axios.create({
-  baseURL: "https://yellowblueredbookstoreapi.runasp.net/api",
-  headers: { 
-    "Content-Type": "application/json",
-    "Accept": "application/json"
-  },
-  timeout: 8000,
-  withCredentials: true, 
-});
+// Export api for components that need it directly
+export { api };
 
 export const Login = async (email, password) => {
   console.log("Attempting login with email:", email);
   try {
     const response = await api.post("/user/login", { email, password });
     console.log("Login successful:", response.data);
+    
+    // Store token if returned in response
+    if (response.data.token) {
+      localStorage.setItem('authToken', response.data.token);
+    }
+    // Store user data if returned
+    if (response.data.user) {
+      localStorage.setItem('authUser', JSON.stringify(response.data.user));
+    }
+    
     return response.data; 
   } catch (error) {
     console.error("Login failed:", error.response?.data || error.message);
@@ -55,8 +58,17 @@ export const applyForVendor = async () => {
     throw error;
   }
 };
+
 export const Logout = async () => {
-  await api.post("/user/logout"); 
+  try {
+    await api.post("/user/logout");
+  } catch (error) {
+    console.error("Logout API call failed:", error);
+  } finally {
+    // Clear local storage on logout
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('authUser');
+  }
 };
 
 
@@ -69,6 +81,8 @@ export const IsAuthenticated = async () => {
     };
   } catch (error) {
     if (error.response?.status === 401 || error.response?.status === 403) {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('authUser');
       return { authenticated: false, user: null };
     }
     console.error("Auth check failed:", error.message);
@@ -95,7 +109,7 @@ export const myInfo = async () => {
   } catch (error) {
     console.error("Failed to fetch my info:", error.response?.data || error.message);
     if (error.response?.status === 401 || error.response?.status === 403) {
-      window.location.href = '/login';
+      window.location.href = '/#/login';
     }
     throw error;
   }   
