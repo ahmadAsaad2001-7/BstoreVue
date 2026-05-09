@@ -12,16 +12,7 @@ export const useAuthStore = defineStore('auth', () => {
 const checkAuth = async () => {
   loading.value = true;
   try {
-    // Check if token exists in localStorage
-    const token = localStorage.getItem('authToken');
-    
-    if (!token) {
-      isAuthenticated.value = false;
-      user.value = null;
-      loading.value = false;
-      return;
-    }
-
+    // Always check auth with backend (uses cookies via withCredentials)
     const result = await IsAuthenticated();
     isAuthenticated.value = result.authenticated;
     
@@ -32,7 +23,7 @@ const checkAuth = async () => {
       localStorage.setItem('authUser', JSON.stringify(user.value));
       console.log("Current User Data:", user.value); 
     } else {
-      localStorage.removeItem('authToken');
+      user.value = null;
       localStorage.removeItem('authUser');
     }
   } catch (err) {
@@ -40,7 +31,6 @@ const checkAuth = async () => {
       isAuthenticated.value = false
       user.value = null
       error.value = err.message
-      localStorage.removeItem('authToken');
       localStorage.removeItem('authUser');
     } finally {
       loading.value = false

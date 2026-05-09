@@ -10,11 +10,7 @@ export const Login = async (email, password) => {
     const response = await api.post("/user/login", { email, password });
     console.log("Login successful:", response.data);
     
-    // Store token if returned in response
-    if (response.data.token) {
-      localStorage.setItem('authToken', response.data.token);
-    }
-    // Store user data if returned
+    // Store user data if returned (token handled by cookies via withCredentials)
     if (response.data.user) {
       localStorage.setItem('authUser', JSON.stringify(response.data.user));
     }
@@ -66,7 +62,6 @@ export const Logout = async () => {
     console.error("Logout API call failed:", error);
   } finally {
     // Clear local storage on logout
-    localStorage.removeItem('authToken');
     localStorage.removeItem('authUser');
   }
 };
@@ -81,7 +76,6 @@ export const IsAuthenticated = async () => {
     };
   } catch (error) {
     if (error.response?.status === 401 || error.response?.status === 403) {
-      localStorage.removeItem('authToken');
       localStorage.removeItem('authUser');
       return { authenticated: false, user: null };
     }
