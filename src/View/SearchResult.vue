@@ -1,7 +1,7 @@
 <script setup>
 import { watch } from "vue";
 import { storeToRefs } from "pinia";
-import { SearchStore } from "../Stores/Search";
+import { SearchStore } from "../Stores/Search.js";
 import UserCard from "../components/UserCard.vue";
 import BookCard from "../components/BookCard.vue";
 

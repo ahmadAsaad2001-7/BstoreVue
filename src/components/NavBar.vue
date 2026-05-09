@@ -81,7 +81,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { useAuthStore } from '../Stores/Auth';
+import { useAuthStore } from '../Stores/Auth.js';
 
 const authStore = useAuthStore();
 const router = useRouter();

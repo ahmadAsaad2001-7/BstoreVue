@@ -1,4 +1,4 @@
-import { api } from './UserService'; 
+import { api } from './UserService.js'; 
 
 
 export const fetchAdminVotes = async () => {

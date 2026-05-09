@@ -148,7 +148,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { getBookById } from '../api/BookService';
+import { getBookById } from '../api/BookService.js';
 import BookCard from '../components/BookCard.vue'; // Optional: for related books
 
 const route = useRoute();

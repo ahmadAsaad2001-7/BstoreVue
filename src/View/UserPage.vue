@@ -2,10 +2,10 @@
 <script setup>
 import { ref, onMounted, watch, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { useAuthStore } from '../stores/auth';
+import { useAuthStore } from '../Stores/Auth.js';
 import Navbar from '../components/NavBar.vue';
-import { api } from '../api/UserService';
-import { applyForVendor } from '../api/UserService';
+import { api } from '../api/UserService.js';
+import { applyForVendor } from '../api/UserService.js';
 
 const router = useRouter();
 const auth = useAuthStore();

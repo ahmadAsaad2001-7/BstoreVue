@@ -113,7 +113,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { Register } from '../api/UserService';
+import { Register } from '../api/UserService.js';
 
 const router = useRouter();
 const isLoading = ref(false);

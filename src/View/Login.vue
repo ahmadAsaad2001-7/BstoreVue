@@ -135,8 +135,8 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useAuthStore } from '../stores/auth';
-import { Login } from '../api/UserService';
+import { useAuthStore } from '../Stores/Auth.js';
+import { Login } from '../api/UserService.js';
 
 
 const email = ref('');

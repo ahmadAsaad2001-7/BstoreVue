@@ -4,8 +4,8 @@ import VoteCard from '../components/VoteCard.vue';
 import UserCard from '../components/UserCard.vue';
 
 
-import { fetchAdminVotes, castAdminVote } from '../api/VotesServices'; 
-import {GetAllUsers} from "../api/AdminService"
+import { fetchAdminVotes, castAdminVote } from '../api/VotesServices.js'; 
+import {GetAllUsers} from "../api/AdminService.js"
 
 
 const currentTab = ref('active');

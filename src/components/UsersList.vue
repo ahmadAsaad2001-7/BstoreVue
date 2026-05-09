@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from "vue"
 import UserCard from "./UserCard.vue"
-import { GetNearByUsers } from "../api/UserService" // تأكد من مسار الملف
+import { GetNearByUsers } from "../api/UserService.js" // تأكد من مسار الملف
 
 // 1. تعريف المتغيرات
 const users = ref([])

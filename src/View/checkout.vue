@@ -110,8 +110,8 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { getBookById } from '../api/BookService';
-import { processPayment, ValidateCoupon } from '../api/PaymentService';
+import { getBookById } from '../api/BookService.js';
+import { processPayment, ValidateCoupon } from '../api/PaymentService.js';
 
 const route = useRoute();
 const router = useRouter();

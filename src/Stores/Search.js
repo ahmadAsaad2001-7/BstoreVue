@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import {ref} from "vue"
-import {api} from "../api/UserService"
+import {api} from "../api/UserService.js"
 
 export const SearchStore = defineStore("search",()=>{
 const searchQuery = ref("");

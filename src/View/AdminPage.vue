@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import NavBar from '../components/NavBar.vue';
-import { fetchAdminVotes } from '../api/VotesServices';
+import { fetchAdminVotes } from '../api/VotesServices.js';
 
 // Reactive state
 const votes = ref([]);

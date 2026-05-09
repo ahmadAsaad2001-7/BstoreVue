@@ -76,7 +76,7 @@
 
 <script setup>
 import { ref, reactive } from 'vue';
-import { AddCoupon } from '../api/AdminService'; 
+import { AddCoupon } from '../api/AdminService.js'; 
 
 const loading = ref(false);
 const errorMessage = ref('');

@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import UserCard from './UserCard.vue';
-import { GetNearestVendors } from '../api/UserService'; 
+import { GetNearestVendors } from '../api/UserService.js'; 
 
 const users = ref([]);
 const isLoading = ref(true);

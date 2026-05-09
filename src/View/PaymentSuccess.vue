@@ -2,7 +2,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { api } from '../api/UserService';
+import { api } from '../api/UserService.js';
 
 const route = useRoute();
 const router = useRouter();

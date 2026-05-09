@@ -20,7 +20,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getBooks } from '../api/BookService'
+import { getBooks } from '../api/BookService.js'
 import BookCard from './BookCard.vue'
 
 
