@@ -1,11 +1,4 @@
-import axios from "axios";
-
-const api = axios.create({
-  baseURL: "https://yellowblueredbookstoreapi.runasp.net/api",
-  headers: { "Content-Type": "application/json" },
-  timeout: 8000,
-  withCredentials: false,
-});
+import api from "./axios.js";
 
 export const GenerateCoupons = async (content) => {
     const response = await api.post("/admin/coupons/generate", { content });

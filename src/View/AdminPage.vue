@@ -1,171 +1,169 @@
-<script setup>
-import { ref, onMounted } from 'vue';
-import NavBar from '../components/NavBar.vue';
-import { fetchAdminVotes } from '../api/VotesServices.js';
-
-// Reactive state
-const votes = ref([]);
-const loading = ref(false);
-const error = ref(null);
-const selectedVote = ref(null); // ✅ Tracks which vote is clicked
-
-// Load all votes on mount
-const loadVotes = async () => {
-  loading.value = true;
-  error.value = null;
-  try {
-    votes.value = await fetchAdminVotes();
-  } catch (err) {
-    error.value = err.response?.data?.error || err.message || 'فشل تحميل التصويتات';
-  } finally {
-    loading.value = false;
-  }
-};
-
-// ✅ Handle vote click
-const selectVote = (vote) => {
-  selectedVote.value = vote;
-};
-
-// ✅ Helper: Calculate approval percentage
-const approvalPct = (vote) => {
-  const total = vote.approvalCount + vote.disapprovalCount;
-  return total === 0 ? 0 : (vote.approvalCount / total) * 100;
-};
-
-// ✅ Helper: Status text & styling
-const statusInfo = (vote) => {
-  if (vote.isResolved) return { text: 'مغلق', class: 'bg-gray-200 text-gray-700' };
-  if (vote.isExpired) return { text: 'منتهي', class: 'bg-red-100 text-red-700' };
-  return { text: 'نشط', class: 'bg-green-100 text-green-700' };
-};
-
-onMounted(loadVotes);
-</script>
 <template>
-  <NavBar title="مقراء" />
+  <div class="min-h-screen bg-brand-bg text-brand-text">
+    <NavBar />
 
-  <div class="flex bg-gray-100 min-h-screen">
-    <div class="flex-grow p-6">
-      <main class="space-y-6">
+    <div class="max-w-screen-xl mx-auto px-6 py-12 flex flex-col md:flex-row gap-12">
+      <!-- Admin Sidebar -->
+      <aside class="w-full md:w-1/4 lg:w-1/5 flex-shrink-0">
+        <h2 class="text-xl font-bold mb-6">Admin Panel</h2>
+        <ul class="flex flex-col gap-3 font-medium text-sm">
+          <li>
+            <button 
+              @click="activeTab = 'votes'" 
+              class="text-left w-full hover:opacity-70 transition-opacity"
+              :class="{ 'underline decoration-2 underline-offset-4 font-bold': activeTab === 'votes' }"
+            >
+              Votes & Requests
+            </button>
+          </li>
+          <li>
+            <button 
+              @click="activeTab = 'coupons'" 
+              class="text-left w-full hover:opacity-70 transition-opacity"
+              :class="{ 'underline decoration-2 underline-offset-4 font-bold': activeTab === 'coupons' }"
+            >
+              Manage Coupons
+            </button>
+          </li>
+          <li>
+            <button 
+              @click="activeTab = 'users'" 
+              class="text-left w-full hover:opacity-70 transition-opacity"
+              :class="{ 'underline decoration-2 underline-offset-4 font-bold': activeTab === 'users' }"
+            >
+              Users Directory
+            </button>
+          </li>
+        </ul>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="w-full md:w-3/4 lg:w-4/5">
         
-        <!-- Header -->
-        <div class="flex justify-between items-center mb-6">
+        <!-- Votes Tab -->
+        <div v-if="activeTab === 'votes'" class="space-y-6">
+          <h3 class="text-2xl font-bold border-b border-gray-300 pb-4">Pending Requests</h3>
+          <div v-if="loading" class="opacity-70">Loading votes...</div>
+          <div v-else-if="votes.length === 0" class="p-6 border border-gray-300 text-center text-sm">No pending requests.</div>
+          <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <VoteCard 
+              v-for="vote in votes" 
+              :key="vote.id" 
+              :vote="vote" 
+              @vote="handleVote"
+            />
+          </div>
+        </div>
+
+        <!-- Coupons Tab -->
+        <div v-if="activeTab === 'coupons'" class="space-y-8">
           <div>
-            <h1 class="text-3xl font-bold text-gray-800">لوحة التحكم</h1>
-            <p class="text-gray-500 text-sm">إدارة التصويتات والمحتوى</p>
+            <h3 class="text-2xl font-bold border-b border-gray-300 pb-4 mb-6">Create New Coupon</h3>
+            <form @submit.prevent="handleCreateCoupon" class="max-w-md space-y-4">
+              <div>
+                <label class="block text-sm font-semibold mb-2">Coupon Code</label>
+                <input v-model="newCoupon.code" type="text" class="w-full px-4 py-2 bg-transparent border border-gray-400 focus:outline-none focus:border-brand-text" required>
+              </div>
+              <div class="flex gap-4">
+                <div class="flex-1">
+                  <label class="block text-sm font-semibold mb-2">Discount (%)</label>
+                  <input v-model.number="newCoupon.Discount_percentage" type="number" min="1" max="100" class="w-full px-4 py-2 bg-transparent border border-gray-400 focus:outline-none focus:border-brand-text" required>
+                </div>
+                <div class="flex-1">
+                  <label class="block text-sm font-semibold mb-2">Quantity</label>
+                  <input v-model.number="newCoupon.quantity" type="number" min="1" class="w-full px-4 py-2 bg-transparent border border-gray-400 focus:outline-none focus:border-brand-text" required>
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-semibold mb-2">Expiry Date</label>
+                <input v-model="newCoupon.expiryDate" type="datetime-local" class="w-full px-4 py-2 bg-transparent border border-gray-400 focus:outline-none focus:border-brand-text" required>
+              </div>
+              <button type="submit" class="px-6 py-2 bg-brand-text text-brand-bg rounded-full text-sm font-bold hover:opacity-80 transition-opacity">
+                Create Coupon
+              </button>
+              <p v-if="couponMsg" class="text-sm font-medium mt-2">{{ couponMsg }}</p>
+            </form>
           </div>
-          <!-- Your existing buttons can go here -->
         </div>
 
-        <!-- Interactive Grid: List + Results -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          
-          <!-- 📋 LEFT: Vote List -->
-          <div class="bg-white shadow rounded-lg p-4">
-            <h3 class="text-lg font-semibold mb-4 text-gray-700 border-b pb-2">🗳️ قائمة التصويتات</h3>
-            
-            <div v-if="loading" class="text-center py-8 text-gray-400">جاري التحميل...</div>
-            <div v-else-if="votes.length === 0" class="text-center py-8 text-gray-400">لا توجد تصويتات</div>
-            
-            <ul v-else class="space-y-2 max-h-[500px] overflow-y-auto pr-1">
-              <li 
-                v-for="vote in votes" 
-                :key="vote.id"
-                @click="selectVote(vote)"
-                class="p-3 rounded-lg cursor-pointer transition-all border-2 hover:bg-blue-50"
-                :class="selectedVote?.id === vote.id 
-                  ? 'bg-blue-100 border-blue-400 shadow-sm' 
-                  : 'border-transparent bg-gray-50'"
-              >
-                <div class="font-medium text-gray-800 truncate">{{ vote.subject }}</div>
-                <div class="flex justify-between text-xs mt-1 text-gray-500">
-                  <span>✅ {{ vote.approvalCount }}</span>
-                  <span>❌ {{ vote.disapprovalCount }}</span>
-                  <span :class="statusInfo(vote).class" class="px-2 py-0.5 rounded-full">{{ statusInfo(vote).text }}</span>
-                </div>
-              </li>
-            </ul>
+        <!-- Users Tab -->
+        <div v-if="activeTab === 'users'" class="space-y-6">
+          <h3 class="text-2xl font-bold border-b border-gray-300 pb-4">User Directory</h3>
+          <div v-if="loading" class="opacity-70">Loading users...</div>
+          <div v-else-if="users.length === 0" class="p-6 border border-gray-300 text-center text-sm">No users found.</div>
+          <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <UserCard v-for="user in users" :key="user.id || user.userId" :user="user" />
           </div>
-
-          <!-- 📊 RIGHT: Result Query Section -->
-          <div class="lg:col-span-2 bg-white shadow rounded-lg p-6">
-            <h3 class="text-lg font-semibold mb-4 text-gray-700 border-b pb-2">📊 نتائج الاستفتاء</h3>
-            
-            <!-- Placeholder (when nothing selected) -->
-            <div v-if="!selectedVote" class="flex flex-col items-center justify-center h-80 text-gray-400 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50">
-              <span class="text-5xl mb-3">👆</span>
-              <p class="text-lg">اختر تصويتاً من القائمة لعرض النتائج التفصيلية</p>
-            </div>
-
-            <!-- ✅ Detailed View (when selected) -->
-            <div v-else class="space-y-6 animate-fadeIn">
-              <div class="flex justify-between items-start">
-                <h2 class="text-2xl font-bold text-gray-800">{{ selectedVote.subject }}</h2>
-                <span :class="statusInfo(selectedVote).class" class="px-3 py-1 rounded-full text-sm font-medium shadow-sm">
-                  {{ statusInfo(selectedVote).text }}
-                </span>
-              </div>
-
-              <!-- Progress Bar -->
-              <div class="space-y-3">
-                <div class="flex justify-between text-sm font-medium">
-                  <span class="text-green-600">✅ موافق: {{ selectedVote.approvalCount }}</span>
-                  <span class="text-red-600">❌ معارض: {{ selectedVote.disapprovalCount }}</span>
-                </div>
-                <div class="h-4 bg-gray-200 rounded-full overflow-hidden flex">
-                  <div 
-                    class="h-full bg-green-500 transition-all duration-700 ease-out"
-                    :style="{ width: approvalPct(selectedVote) + '%' }"
-                  ></div>
-                  <div 
-                    class="h-full bg-red-400 transition-all duration-700 ease-out"
-                    :style="{ width: (100 - approvalPct(selectedVote)) + '%' }"
-                  ></div>
-                </div>
-                <p class="text-center text-sm text-gray-600">
-                  نسبة الموافقة: <span class="font-bold text-green-600">{{ approvalPct(selectedVote).toFixed(1) }}%</span>
-                  • إجمالي الأصوات: {{ selectedVote.approvalCount + selectedVote.disapprovalCount }}
-                </p>
-              </div>
-
-              <!-- Meta Info -->
-              <div class="grid grid-cols-2 gap-4 text-sm bg-gray-50 p-4 rounded-lg border">
-                <div>
-                  <span class="text-gray-500 block text-xs">تاريخ الانتهاء</span>
-                  <span class="font-medium">{{ new Date(selectedVote.expiryDate).toLocaleDateString('ar-EG') }}</span>
-                </div>
-                <div>
-                  <span class="text-gray-500 block text-xs">حالة التصويت</span>
-                  <span class="font-medium">{{ selectedVote.canVote ? 'قابل للتصويت' : 'مغلق/منتهي' }}</span>
-                </div>
-              </div>
-
-              <!-- Action Buttons (Optional: for admin to resolve/close) -->
-              <div v-if="!selectedVote.isResolved && !selectedVote.isExpired" class="flex gap-3 pt-4 border-t">
-                <button class="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition">
-                  إغلاق التصويت
-                </button>
-                <button class="flex-1 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg transition">
-                  تصدير النتائج
-                </button>
-              </div>
-            </div>
-          </div>
-
         </div>
+
       </main>
     </div>
   </div>
 </template>
 
-<style scoped>
-/* Optional: Smooth fade-in animation */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+<script setup>
+import { ref, onMounted, reactive } from 'vue'
+import NavBar from '../components/NavBar.vue'
+import VoteCard from '../components/VoteCard.vue'
+import UserCard from '../components/UserCard.vue'
+import { fetchAdminVotes, castAdminVote } from '../api/VotesServices.js'
+import { GetAllUsers, AddCoupon } from '../api/AdminService.js'
+
+const activeTab = ref('votes')
+const loading = ref(false)
+const votes = ref([])
+const users = ref([])
+
+// Coupon Form State
+const newCoupon = reactive({
+  code: '',
+  quantity: 1,
+  expiryDate: '',
+  Discount_percentage: 10
+})
+const couponMsg = ref('')
+
+const loadData = async () => {
+  loading.value = true
+  try {
+    const fetchedVotes = await fetchAdminVotes()
+    votes.value = Array.isArray(fetchedVotes.value || fetchedVotes) ? (fetchedVotes.value || fetchedVotes) : []
+    
+    const fetchedUsers = await GetAllUsers()
+    users.value = fetchedUsers || []
+  } catch (err) {
+    console.error("Error loading admin data:", err)
+  } finally {
+    loading.value = false
+  }
 }
-.animate-fadeIn {
-  animation: fadeIn 0.3s ease-out;
+
+const handleVote = async ({ id, isApproved }) => {
+  try {
+    await castAdminVote(id, isApproved)
+    await loadData()
+  } catch (err) {
+    console.error("Vote failed:", err)
+    alert("Failed to cast vote.")
+  }
 }
-</style>
+
+const handleCreateCoupon = async () => {
+  couponMsg.value = 'Creating...'
+  try {
+    await AddCoupon({ ...newCoupon })
+    couponMsg.value = 'Coupon created successfully!'
+    newCoupon.code = ''
+    newCoupon.quantity = 1
+    newCoupon.expiryDate = ''
+    newCoupon.Discount_percentage = 10
+  } catch (err) {
+    console.error(err)
+    couponMsg.value = 'Failed to create coupon.'
+  }
+}
+
+onMounted(() => {
+  loadData()
+})
+</script>

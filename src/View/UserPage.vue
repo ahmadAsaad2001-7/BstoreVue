@@ -1,4 +1,3 @@
-
 <script setup>
 import { ref, onMounted, watch, computed } from 'vue';
 import { useRouter } from 'vue-router';
@@ -118,186 +117,143 @@ const handleReadBook = (bookId) => {
 </script>
 
 <template>
-  <Navbar title="مكتبتي الشخصية" />
+  <div class="min-h-screen bg-brand-bg flex flex-col" dir="rtl">
+    <Navbar title="مكتبتي الشخصية" />
 
-  
-  <div v-if="auth.loading || loading" class="fixed inset-0 bg-gray-900/90 flex items-center justify-center z-50">
-    <div class="text-center">
-      <div class="animate-spin rounded-full h-12 w-12 border-4 border-yellow-500 border-t-transparent mx-auto mb-4"></div>
-      <p class="text-white text-lg">جاري تحميل مكتبتك...</p>
+    <div v-if="auth.loading || loading" class="fixed inset-0 bg-white/80 flex items-center justify-center z-50">
+      <div class="text-center font-bold text-brand-text text-xl">
+        جاري تحميل مكتبتك...
+      </div>
     </div>
-  </div>
 
-  <div v-else-if="auth.isAuthenticated" class="bg-purple-600 w-full h-[100dvh] flex items-start overflow-hidden">
-    
-    <!-- Sidebar -->
-    <aside class="rounded-b-2xl bg-gradient-to-b from-green-300 to-green-200 h-full w-[15%] min-w-[140px] flex flex-col items-center justify-start p-4 shadow-lg border-r border-green-400/30">
-      <div class="relative mb-4">
-        <img 
-          class="h-20 w-20 rounded-full object-cover border-4 border-white/80 shadow-md" 
-          alt="user avatar" 
-          :src="auth.user?.imageUrl || 'https://www.svgrepo.com/show/492788/book-and-person-winter.svg'"
-        >
-        <span class="absolute bottom-0 right-0 h-4 w-4 rounded-full bg-green-500 border-2 border-white" title="نشط"></span>
-      </div>
+    <div v-else-if="auth.isAuthenticated" class="flex-1 flex flex-col md:flex-row max-w-7xl mx-auto w-full border-x border-gray-300">
       
-      <h2 class="text-white text-lg font-bold text-center mb-1 truncate w-full">
-        {{ auth.user?.name || 'مستخدم' }}
-      </h2>
-      
-      <p class="text-green-900/80 text-xs text-center mb-4 truncate w-full">
-        {{ auth.user?.email || 'user@example.com' }}
-      </p>
-      
-      <div class="w-full bg-white/20 rounded-lg p-3 text-center">
-        <p class="text-white text-xs">عدد الكتب</p>
-        <p class="text-white text-xl font-bold">{{ validBooks.length }}</p>
-      </div>
-
-<div v-if="auth.isAuthenticated && !auth.isVendor" class="w-full bg-white/20 rounded-lg p-3 text-center mt-3">
-      <p class="text-xs mb-2">التقديم كبائع</p>
-    <p v-if="error" class="text-red-400 text-xs mb-2">{{ error }}</p>
-    <button
-      @click="handleApplyforVendor"
-      class="w-full px-4 py-2 bg-yellow-600 hover:bg-yellow-500 disabled:opacity-50 text-white text-sm rounded-lg transition-colors shadow"
-    >
-      ➕ تقديم الطلب
-    </button>
-    
-  </div>
-
-  
-  <div v-else class="mt-3">
-    <router-link to="/AddBook">
-      <button
-        type="button"
-        class="text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center"
-      >
-        ➕ إضافة كتاب
-      </button>
-    </router-link>
-
-     
-    
-  </div>
-  
-</aside>
-
-    <!-- Content Area -->
-    <main class="bg-yellow-800 w-[85%] h-full overflow-y-auto p-4 md:p-6 scroll-smooth">
-      
-      <!-- Header -->
-      <div class="mb-6 flex items-center justify-between">
-        <div>
-          <h1 class="text-xl md:text-2xl font-bold text-white mb-1">📚 مكتبتي الشخصية</h1>
-          <p class="text-yellow-200/90 text-sm">
-            {{ validBooks.length }} كتاب {{ validBooks.length === 1 ? 'مقتنى' : 'مقتناة' }}
-          </p>
+      <!-- Sidebar -->
+      <aside class="w-full md:w-64 bg-white border-b md:border-b-0 md:border-l border-gray-300 p-6 flex flex-col items-center shrink-0">
+        <div class="mb-4">
+          <img 
+            class="h-24 w-24 rounded-full object-cover border-4 border-brand-text" 
+            alt="user avatar" 
+            :src="auth.user?.imageUrl || 'https://www.svgrepo.com/show/492788/book-and-person-winter.svg'"
+          >
         </div>
-     
-      </div>
+        
+        <h2 class="text-brand-text text-xl font-black text-center mb-1 w-full truncate">
+          {{ auth.user?.name || 'مستخدم' }}
+        </h2>
+        
+        <p class="text-gray-500 text-sm font-bold text-center mb-6 w-full truncate">
+          {{ auth.user?.email || 'user@example.com' }}
+        </p>
+        
+        <div class="w-full bg-gray-50 border border-gray-300 p-4 text-center mb-6">
+          <p class="text-gray-500 font-bold text-sm">عدد الكتب</p>
+          <p class="text-brand-text text-3xl font-black">{{ validBooks.length }}</p>
+        </div>
 
-      <!-- Error State -->
-      <div v-if="error" class="flex flex-col items-center justify-center h-64 text-center">
-        <span class="text-4xl mb-3">⚠️</span>
-        <p class="text-white font-medium mb-2">{{ error }}</p>
-        <button @click="fetchLibrary" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-white rounded-lg text-sm transition">
-          إعادة المحاولة
-        </button>
-      </div>
-
-      <!-- Empty State -->
-      <div v-else-if="validBooks.length === 0" class="flex flex-col items-center justify-center h-64 text-center">
-        <span class="text-5xl mb-3">📭</span>
-        <p class="text-white font-medium mb-1">لا توجد كتب في مكتبتك بعد</p>
-        <p class="text-yellow-200/80 text-sm mb-4">ابدأ باستكشاف المتجر لإضافة كتبك الأولى</p>
-        <button @click="router.push('/')" class="px-5 py-2 bg-yellow-600 hover:bg-yellow-500 text-white rounded-lg text-sm transition shadow">
-          تصفح المتجر
-        </button>
-      </div>
-
-      <!-- ✅ Book Cards Grid - FIXED: Use validBooks + defensive key -->
-      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-        <div 
-          v-for="book in validBooks" 
-          :key="book.id" 
-          class="group bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-yellow-700/50 hover:border-yellow-400 transition-all hover:shadow-xl hover:-translate-y-1 cursor-pointer"
-          @click="handleReadBook(book.id)"
-        >
-          <!-- Book Cover -->
-          <div class="relative h-40 bg-gradient-to-br from-yellow-700/40 to-yellow-800/60 rounded-lg mb-4 flex items-center justify-center overflow-hidden group-hover:scale-[1.02] transition-transform">
-            <img 
-              v-if="book.coverUrl" 
-              :src="book.coverUrl" 
-              :alt="book.title"
-              class="absolute inset-0 w-full h-full object-cover"
+        <div v-if="auth.isAuthenticated && !auth.isVendor" class="w-full text-center">
+          <p v-if="error" class="text-red-600 font-bold text-sm mb-2">{{ error }}</p>
+          <button
+            @click="handleApplyforVendor"
+            class="w-full px-4 py-3 bg-brand-text hover:bg-gray-800 disabled:opacity-50 text-white font-bold rounded-full transition-colors"
+          >
+            التقديم كبائع
+          </button>
+        </div>
+        
+        <div v-else class="w-full">
+          <router-link to="/AddBook" class="block w-full">
+            <button
+              type="button"
+              class="w-full px-4 py-3 bg-brand-accent hover:opacity-90 disabled:opacity-50 text-brand-text font-black rounded-full transition-colors border border-brand-text"
             >
-            <span v-else class="text-yellow-200 text-4xl opacity-60">📖</span>
+              إضافة كتاب
+            </button>
+          </router-link>
+        </div>
+      </aside>
+
+      <!-- Content Area -->
+      <main class="flex-1 bg-brand-bg p-6 md:p-10">
+        
+        <!-- Header -->
+        <div class="mb-8 border-b border-gray-300 pb-4">
+          <h1 class="text-3xl font-extrabold text-brand-text">مكتبتي الشخصية</h1>
+        </div>
+
+        <!-- Error State -->
+        <div v-if="error" class="flex flex-col items-center justify-center py-20 text-center">
+          <span class="text-5xl mb-4">⚠️</span>
+          <p class="text-red-600 font-bold text-lg mb-4">{{ error }}</p>
+          <button @click="fetchLibrary" class="px-6 py-2 bg-brand-text text-brand-bg font-bold rounded-full">
+            إعادة المحاولة
+          </button>
+        </div>
+
+        <!-- Empty State -->
+        <div v-else-if="validBooks.length === 0" class="flex flex-col items-center justify-center py-20 text-center">
+          <span class="text-6xl mb-4">📭</span>
+          <p class="text-brand-text font-extrabold text-2xl mb-2">لا توجد كتب في مكتبتك بعد</p>
+          <p class="text-gray-500 font-bold mb-6">ابدأ باستكشاف المتجر لإضافة كتبك الأولى</p>
+          <button @click="router.push('/')" class="px-8 py-3 bg-brand-text text-brand-bg font-black rounded-full hover:opacity-80">
+            تصفح المتجر
+          </button>
+        </div>
+
+        <!-- Book Cards Grid -->
+        <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div 
+            v-for="book in validBooks" 
+            :key="book.id" 
+            class="group bg-white border border-gray-300 p-4 hover:border-brand-text hover:shadow-md transition-all cursor-pointer flex flex-col"
+            @click="handleReadBook(book.id)"
+          >
+            <!-- Book Cover -->
+            <div class="relative h-48 bg-gray-100 mb-4 border border-gray-200 overflow-hidden">
+              <img 
+                v-if="book.coverUrl" 
+                :src="book.coverUrl" 
+                :alt="book.title"
+                class="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-105"
+              >
+              <div v-else class="absolute inset-0 flex items-center justify-center text-4xl text-gray-300">📖</div>
+              <span class="absolute top-2 right-2 bg-brand-accent text-brand-text text-xs font-bold px-2 py-1 border border-brand-text">
+                مُقتنى
+              </span>
+            </div>
             
-            <span class="absolute top-2 right-2 bg-yellow-500/90 text-white text-[10px] px-2 py-0.5 rounded-full shadow">
-              مُقتنى
-            </span>
-          </div>
-          
-          <!-- Book Info - Defensive null checks -->
-          <h3 class="font-bold text-white mb-1 line-clamp-1" :title="book.title || ''">
-            {{ book.title || 'عنوان الكتاب' }}
-          </h3>
-          <p class="text-yellow-100/70 text-xs mb-3 line-clamp-2" :title="book.author || ''">
-            {{ book.author || 'مؤلف غير معروف' }}
-          </p>
-          
-          <!-- Purchase Date -->
-          <div class="flex items-center gap-1 text-[10px] text-yellow-200/80 mb-3">
-            <span>🕒</span>
-            <span>{{ book.purchaseDate ? new Date(book.purchaseDate).toLocaleDateString('ar-EG') : 'تاريخ غير محدد' }}</span>
-          </div>
-          
-          <!-- Actions -->
-          <div class="flex gap-2">
-            <button 
-              @click.stop="handleReadBook(book.id)"
-              class="flex-1 py-1.5 px-2 bg-yellow-600/90 hover:bg-yellow-500 text-white text-[11px] rounded-lg transition-colors"
-            >
-              قراءة
-            </button>
-            <button 
-              class="p-1.5 bg-white/10 hover:bg-white/20 text-yellow-100 rounded-lg transition-colors" 
-              title="مزيد من الخيارات"
-              @click.stop
-            >
-              ⋮
-            </button>
+            <!-- Book Info -->
+            <div class="flex-1">
+              <h3 class="font-extrabold text-brand-text mb-1 line-clamp-1" :title="book.title || ''">
+                {{ book.title || 'عنوان الكتاب' }}
+              </h3>
+              <p class="text-gray-500 text-sm font-medium mb-3 line-clamp-1" :title="book.author || ''">
+                {{ book.author || 'مؤلف غير معروف' }}
+              </p>
+            </div>
+            
+            <!-- Actions -->
+            <div class="pt-4 border-t border-gray-200">
+              <button 
+                @click.stop="handleReadBook(book.id)"
+                class="w-full py-2 bg-brand-text text-brand-bg font-bold rounded-none hover:bg-gray-800 transition-colors text-sm"
+              >
+                قراءة الكتاب
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div v-if="validBooks.length >= 12" class="mt-8 text-center">
-        <button class="px-6 py-2 bg-yellow-700 hover:bg-yellow-600 text-white rounded-full text-sm transition-colors shadow">
-          تحميل المزيد ↓
-        </button>
-      </div>
-
-    </main>
+      </main>
+    </div>
   </div>
 </template>
 
 <style scoped>
-
 .line-clamp-1 {
   display: -webkit-box;
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-main::-webkit-scrollbar { width: 6px; }
-main::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }
-main::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.3); border-radius: 3px; }
-main::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.5); }
 </style>

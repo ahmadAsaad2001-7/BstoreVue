@@ -41,54 +41,81 @@ const router = createRouter({
   
 
         {
-        path: "/books/:id",           // ✅ Dynamic route with book ID param
-        name: "BookDetail",
-        component: () => import("../View/BookDetails.vue"),
-        props: true,                  // ✅ Pass route params as props
-        meta: { requiresAuth: false } // ✅ Public page (anyone can view book details)
+            path: "/books/:id",
+            name: "BookDetail",
+            component: () => import("../View/BookDetails.vue"),
+            props: true,
+            meta: { requiresAuth: false }
         },
         {
-            path:"/AdminPage",
-            name:"AdminPage",
+            path: "/AdminPage",
+            name: "AdminPage",
             component: () => import("../View/AdminPage.vue"),
-
-           
-        }
-        ,{
-            path:"/VoteView",
-            name:"VoteView",
+            meta: { requiresAdmin: true }
+        },
+        {
+            path: "/VoteView",
+            name: "VoteView",
             component: () => import("../View/VoteView.vue"),
+            meta: { requiresAdmin: true }
         },
         {
-            path:"/AddBook",
-            name:"AddBook",
-            component:()=>import("../View/AddBook.vue")
-
+            path: "/AddBook",
+            name: "AddBook",
+            component: () => import("../View/AddBook.vue"),
+            meta: { requiresAuth: true }
         },
         {
-            path:"/Vendors",
-            name:"Vendors",
-            component:()=>import("../View/Vendors.vue")
-
+            path: "/Vendors",
+            name: "Vendors",
+            component: () => import("../View/Vendors.vue")
         },
         {
-            path:"/Users",
-            name:"Users",
-            component:()=>import("../View/Users.vue")
-
+            path: "/Users",
+            name: "Users",
+            component: () => import("../View/Users.vue")
         },
         {
-            path:"/Search",
-            name:"Search",
-            component:()=>import("../View/SearchResult.vue")
+            path: "/Search",
+            name: "Search",
+            component: () => import("../View/SearchResult.vue")
         },
         {
-path:"/couponform",
-name:"CouponForm",
-component:()=>import("../View/couponform.vue")  
+            path: "/couponform",
+            name: "CouponForm",
+            component: () => import("../View/couponform.vue"),
+            meta: { requiresAdmin: true }
         }
-        
-    ]});
+    ]
+});
 
-export default router
+router.beforeEach(async (to, from, next) => {
+  const { useAuthStore } = await import("../Stores/Auth.js");
+  const authStore = useAuthStore();
+  
+  if (authStore.loading) {
+    await new Promise(resolve => {
+      const check = () => {
+        if (!authStore.loading) resolve();
+        else setTimeout(check, 50);
+      };
+      check();
+    });
+  }
 
+  if (to.meta.requiresAuth || to.meta.requiresAdmin) {
+    if (!authStore.isAuthenticated) {
+      return next('/login');
+    }
+  }
+
+  if (to.meta.requiresAdmin) {
+    if (!authStore.user?.roles?.includes('ADMINISTRATOR')) {
+      return next('/');
+    }
+  }
+  
+  next();
+});
+
+export default router;

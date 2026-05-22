@@ -1,96 +1,95 @@
 <template>
-  <nav class="stars-container relative w-full border-b border-gray-700 bg-gray-900 p-4">
-  <div class="mx-auto flex max-w-screen-xl items-center justify-between">
-  
+  <nav class="sticky top-0 z-50 w-full bg-slate-900/95 backdrop-blur-md border-b border-white/10 shadow-lg shadow-black/20">
+    <div class="mx-auto flex max-w-screen-xl items-center justify-between px-6 py-4">
 
-     
-              <router-link to="/" class="flex items-center gap-2">
-                <img class="h-8 w-8 object-cover rounded" alt="logo" src="https://www.svgrepo.com/show/492788/book-and-person-winter.svg">
-                <span class="font-bold text-white">{{ title }}</span>
-              </router-link>
-       
-          
-           <router-link 
+      <!-- Left: Logo -->
+      <router-link to="/" class="flex flex-col items-start leading-none group">
+        <span class="font-extrabold text-2xl tracking-tighter text-white group-hover:text-emerald-400 transition-colors duration-200">اقرأني®</span>
+        <span class="text-[10px] font-medium text-slate-500 mt-0.5 uppercase tracking-widest group-hover:text-emerald-400 transition-colors duration-200">By Iqraani</span>
+      </router-link>
+
+      <!-- Center: Links -->
+      <ul class="hidden md:flex flex-row gap-1 items-center font-medium text-sm">
+        <li>
+          <router-link
+            to="/"
+            class="px-4 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition-all duration-200"
+          >المتجر</router-link>
+        </li>
+        <li>
+          <router-link
+            to="/Users"
+            class="px-4 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition-all duration-200"
+          >المستخدمين</router-link>
+        </li>
+        <li>
+          <router-link
+            to="/Vendors"
+            class="px-4 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition-all duration-200"
+          >البائعين</router-link>
+        </li>
+        <li>
+          <router-link
+            to="/Search"
+            class="px-4 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition-all duration-200"
+          >البحث</router-link>
+        </li>
+      </ul>
+
+      <!-- Right: Auth / Admin -->
+      <div class="flex items-center gap-3">
+        <router-link
           v-if="authStore.isAuthenticated && authStore.user?.roles?.includes('ADMINISTRATOR')"
-          to="/AdminPage" >
-         
+          to="/AdminPage"
+          class="hidden md:flex items-center gap-1.5 text-xs font-bold text-amber-400 hover:text-amber-300 transition-colors duration-200 border border-amber-400/30 rounded-lg px-3 py-2 hover:bg-amber-400/10"
         >
-          <span class=" text-white">
-            <img src="https://www.svgrepo.com/show/492788/book-and-person-winter.svg" alt="img" class="h-4 w-4 inline-block mr-1 "> 
-            لوحة التحكم
-          </span>
+          <span>⚙</span>
+          لوحة التحكم
         </router-link>
-      
-    <ul class="flex flex-row gap-6">
-    
 
-      <li>  <router-link to="/" class="text-xs text-gray-300 hover:text-white">
-الصفحة الرئيسية  </router-link></li>
-
-      <li>
-  <router-link to="/userpage" class="text-xs text-gray-300 hover:text-white">
-    عن المصمم
-  </router-link>
-</li>
-
-      <li v-if="authStore.isAuthenticated">
-         <router-link to="/UserPage" class="text-xs text-gray-300 hover:text-white">
-    
-           <img src="https://www.svgrepo.com/show/301085/desk-classroom.svg" alt="img" class="h-4 w-4 inline-block mr-1 ">
-          {{ authStore.user?.name || 'حسابي' }}
-
-         </router-link>
-         <span>---</span>
-         <span class="text-xs text-gray-300 hover:text-white" @click="handleLogout" style="cursor: pointer;">
-           <img src="https://www.svgrepo.com/show/281468/open-door-doorway.svg" alt="img" class="h-4 w-4 inline-block mr-1 ">
-           تسجيل الخروج   
-         </span>
-      </li>
-
-      <li v-else>
-         <router-link to="/Login" class="text-xs text-gray-300 hover:text-white">
-    
-           <img src="https://www.svgrepo.com/show/281468/open-door-doorway.svg" alt="img" class="h-4 w-4 inline-block mr-1 ">
-           تسجيل الدخول   
-
-         </router-link>
-
-         <router-link to="/register" class="text-xs text-gray-300 hover:text-white ml-4">
-    
-           <img src="https://www.svgrepo.com/show/281468/open-door-doorway.svg" alt="img" class="h-4 w-4 inline-block mr-1 ">
-           إنشاء حساب
+        <template v-if="authStore.isAuthenticated">
+          <router-link
+            to="/UserPage"
+            class="hidden md:flex items-center gap-2 text-sm font-medium text-slate-300 hover:text-white transition-colors duration-200"
+          >
+            <span class="inline-flex w-8 h-8 rounded-full bg-emerald-600 items-center justify-center text-white text-xs font-bold">
+              {{ (authStore.user?.name || 'U').charAt(0).toUpperCase() }}
+            </span>
+            {{ authStore.user?.name || 'حسابي' }}
           </router-link>
-      </li>
+          <button
+            @click="handleLogout"
+            class="px-4 py-2 bg-rose-500/10 text-rose-400 border border-rose-500/30 rounded-lg text-xs font-bold hover:bg-rose-500/20 hover:text-rose-300 transition-all duration-200 cursor-pointer"
+          >
+            خروج
+          </button>
+        </template>
 
-    </ul>
-      
-
-    <div class="hidden md:block">
-      <div >
-        <router-link to="Search" class="inline-flex items-center  text-white bg-brand hover:bg-brand-strong box-border border border-transparent focus:ring-4 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded-base text-xs px-3 py-1.5 focus:outline-none">
-<svg class="w-3.5 h-3.5 me-1.5 -ms-0.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312"/>
-</svg>
-البحث </router-link>
+        <template v-else>
+          <router-link
+            to="/login"
+            class="px-5 py-2 bg-emerald-500 hover:bg-emerald-400 text-white rounded-lg text-xs font-bold transition-all duration-200 shadow-md shadow-emerald-900/30"
+          >
+            تسجيل الدخول
+          </router-link>
+        </template>
       </div>
+
     </div>
-  </div>
-</nav>
+  </nav>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { useAuthStore } from '../Stores/Auth.js';
 
 const authStore = useAuthStore();
 const router = useRouter();
-const route = useRoute(); 
-const title = ref('Book Store');
+const title = ref('اقرأني');
 
 const handleLogout = async () => {
   await authStore.logout();
   router.push('/login');
 };
-
 </script>

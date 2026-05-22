@@ -11,48 +11,54 @@ const props = defineProps({
     validator: (value) => value && typeof value.id === 'string'
   }
 })
+
 const viewBook = () => {
   router.push(`/books/${props.book.id}`);
 };
-// ✅ Navigate to checkout with book ID
+
 const handleBuyNow = (bookId) => {
-  // Option A: Direct checkout (single book)
   router.push({
     path: '/checkout',
-    query: { bookId } // ?bookId=xxx
+    query: { bookId }
   })
-  
-
 }
 </script>
 
 <template>
-  <div class="group bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 hover:border-blue-500/50 transition-all duration-300 shadow-lg">
-    <div class="relative aspect-[3/4] overflow-hidden bg-gray-800">
-      <img 
-        :src="book.coverUrl || book.imageUrl || '/fallback-book.png'" 
+  <div
+    @click="viewBook"
+    class="group cursor-pointer flex flex-col bg-slate-900 border border-white/8 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/40 hover:border-emerald-500/30"
+  >
+    <!-- Image Container -->
+    <div class="relative w-full aspect-[3/4] overflow-hidden bg-slate-800 flex items-center justify-center p-4">
+      <!-- Sale badge -->
+      <div v-if="book.price < 20" class="absolute top-3 left-3 z-10 text-[10px] font-extrabold uppercase tracking-widest text-white bg-orange-500 rounded-md px-2 py-1 shadow-md">
+        Sale
+      </div>
+
+      <img
+        :src="book.coverUrl || book.imageUrl || '/fallback-book.png'"
         :alt="book.title"
-        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+        class="max-w-full max-h-full object-contain transition-transform duration-500 group-hover:scale-105"
         @error="(e) => e.target.src = 'https://via.placeholder.com/300x400?text=No+Cover'"
       />
-      <div class="absolute top-3 left-3 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-lg">
-        ${{ book.price }}
+
+      <!-- Hover overlay with quick action -->
+      <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
+        <span class="text-xs font-semibold text-white bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
+          عرض الكتاب
+        </span>
       </div>
     </div>
 
-    <!-- تفاصيل الكتاب -->
-    <div class="p-4">
-      <h3 class="text-white font-bold text-lg truncate mb-1">{{ book.title || book.name }}</h3>
-      <p class="text-gray-400 text-sm mb-4">{{ book.author }}</p>
-      
-      <div class="flex gap-2">
-        <button class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-xl text-sm font-bold transition" @click.stop="handleBuyNow(book.id)">
-          شراء الآن
-        </button>
-        <button class="px-3 bg-gray-800 hover:bg-gray-700 text-gray-300 py-2 rounded-xl text-sm transition" @click.stop="viewBook">
-          التفاصيل
-        </button>
-      </div>
+    <!-- Book Details -->
+    <div class="p-4 flex flex-col gap-1">
+      <h3 class="font-bold text-sm text-white leading-snug line-clamp-2">
+        {{ book.title || book.name }}
+      </h3>
+      <p class="text-emerald-400 font-semibold text-sm mt-1">
+        ${{ Number(book.price).toFixed(2) }}
+      </p>
     </div>
   </div>
 </template>

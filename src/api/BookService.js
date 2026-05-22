@@ -3,7 +3,7 @@ import axios from "axios";
 import { GENRES } from '../constants/genres.js';
 
 const api = axios.create({
-  baseURL: "https://yellowblueredbookstoreapi.runasp.net/api/", 
+  baseURL: "https://ybrbookstoreapi.runasp.net/api/", 
   headers: { 
     "Content-Type": "application/json",
     "Accept": "application/json"
