@@ -1,8 +1,8 @@
 <!-- 📁 components/BookCard.vue -->
 <script setup>
 import { useRouter } from 'vue-router'
-import { useCartStore } from '../stores/CartStore'
-import { useAuthStore } from '../stores/Auth'
+import { useCartStore } from '../Stores/CartStore'
+import { useAuthStore } from '../Stores/Auth'
 import { ref, computed } from 'vue'
 
 const router = useRouter()

@@ -53,7 +53,7 @@
 
 <script setup>
 import { computed } from 'vue'  // ✅ Fixed: Import computed, not ref
-import { useCartStore } from '../stores/cartStore.js'
+import { useCartStore } from '../Stores/CartStore.js'
 
 const cartStore = useCartStore()
 
