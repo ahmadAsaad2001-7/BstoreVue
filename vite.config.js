@@ -8,4 +8,13 @@ export default defineConfig({
     vue(),
     tailwindcss()
   ],
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://ybrbookstoreapi.runasp.net',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '/api'),
+      }
+    }
+  }
 })

@@ -36,7 +36,7 @@
         </li>
       </ul>
 
-      <!-- Right: Auth / Admin -->
+      <!-- Right: Auth / Admin / Vendor -->
       <div class="flex items-center gap-3">
         <router-link
           v-if="authStore.isAuthenticated && authStore.user?.roles?.includes('ADMINISTRATOR')"
@@ -47,6 +47,16 @@
           لوحة التحكم
         </router-link>
 
+        <router-link
+          v-if="authStore.isAuthenticated && authStore.isVendor"
+          to="/AddBook"
+          class="hidden md:flex items-center gap-1.5 text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors duration-200 border border-blue-400/30 rounded-lg px-3 py-2 hover:bg-blue-400/10"
+        >
+          <span>📚</span>
+          إضافة كتاب
+        
+</router-link>
+        <router-link v-if="authStore.isAuthenticated" class="hidden md:flex items-center gap-2 text-sm font-medium text-slate-300 hover:text-white transition-colors duration-200" to="/CartPage"> العربة🛒 </router-link>
         <template v-if="authStore.isAuthenticated">
           <router-link
             to="/UserPage"

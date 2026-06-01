@@ -11,15 +11,35 @@ const isLoading = ref(true)
 onMounted(async () => {
   try {
     const responseData = await GetNearByUsers();
+    console.log("GetNearByUsers response:", responseData);
     
-    if (responseData && responseData.isSuccess) {
-      users.value = responseData.value.map(u => ({
+    // Handle both wrapped (with isSuccess) and direct array responses
+    let userData = [];
+    
+    if (responseData && responseData.isSuccess && responseData.value) {
+      // Wrapped response format
+      userData = responseData.value;
+    } else if (responseData && responseData.isSuccess === false && responseData.value) {
+      // Error response with data
+      userData = responseData.value;
+    } else if (Array.isArray(responseData)) {
+      // Direct array response
+      userData = responseData;
+    } else if (responseData && Array.isArray(responseData.data)) {
+      // Response with data property
+      userData = responseData.data;
+    }
+    
+    if (userData.length > 0) {
+      users.value = userData.map(u => ({
         id: u.userId,
         name: u.userName,
         imageUrl: u.imageUrl,
         isSuspended: u.isSuspended,
         email: "مستخدم قريب"
       }));
+    } else {
+      console.warn("No user data found in response:", responseData);
     }
   } catch (err) {
     console.error("Error loading users:", err);

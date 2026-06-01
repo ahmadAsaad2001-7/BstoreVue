@@ -123,13 +123,16 @@ export const GetNearestVendors =async()=>{
 
 export const GetNearByUsers=async()=>{
   try{
-  const Users=await api.get("/user/getNearbyUsers")
-  return Users.data;
-}catch(err)
-{
-  throw err;
-
-}}
+    const Users=await api.get("/user/getNearbyUsers")
+    return Users.data;
+  }catch(error){
+    console.error("failed to fetch nearby users,", error.response?.data||error.message);
+    if(error.response?.status===401||error.response?.status===403){
+      window.location.href='/#/login';
+    }
+    throw error;
+  }
+}
 export const search = async (content) => {
   try {
 

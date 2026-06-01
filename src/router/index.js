@@ -63,7 +63,7 @@ const router = createRouter({
             path: "/AddBook",
             name: "AddBook",
             component: () => import("../View/AddBook.vue"),
-            meta: { requiresAuth: true }
+            meta: { requiresAuth: true, requiresVendor: true }
         },
         {
             path: "/Vendors",
@@ -85,6 +85,12 @@ const router = createRouter({
             name: "CouponForm",
             component: () => import("../View/couponform.vue"),
             meta: { requiresAdmin: true }
+        },
+        {
+          path: "/CartPage",
+          name: "CartPage",
+          component: () => import("../View/CartPage.vue"),
+          meta: { requiresAuth: true }
         }
     ]
 });
@@ -111,6 +117,12 @@ router.beforeEach(async (to, from, next) => {
 
   if (to.meta.requiresAdmin) {
     if (!authStore.user?.roles?.includes('ADMINISTRATOR')) {
+      return next('/');
+    }
+  }
+
+  if (to.meta.requiresVendor) {
+    if (!authStore.isVendor) {
       return next('/');
     }
   }

@@ -9,19 +9,35 @@ const isLoading = ref(true);
 onMounted(async () => {
   try {
     const responseData = await GetNearestVendors();
+    console.log("GetNearestVendors response:", responseData);
     
-    if (responseData && responseData.isSuccess) {
-      
-      users.value = responseData.value.map(vendor => ({
+    // Handle both wrapped (with isSuccess) and direct array responses
+    let vendorData = [];
+    
+    if (responseData && responseData.isSuccess && responseData.value) {
+      // Wrapped response format
+      vendorData = responseData.value;
+    } else if (responseData && responseData.isSuccess === false && responseData.value) {
+      // Error response with data
+      vendorData = responseData.value;
+    } else if (Array.isArray(responseData)) {
+      // Direct array response
+      vendorData = responseData;
+    } else if (responseData && Array.isArray(responseData.data)) {
+      // Response with data property
+      vendorData = responseData.data;
+    }
+    
+    if (vendorData.length > 0) {
+      users.value = vendorData.map(vendor => ({
         id: vendor.vendorId,            
         name: vendor.vendorName,      
         email: "بائع قريب",             
         roles: ["Vendor"],            
         imageUrl: null                
       }));
-
     } else {
-      console.error("Backend returned an error:", responseData.error);
+      console.warn("No vendor data found in response:", responseData);
     }
 
   } catch (error) {

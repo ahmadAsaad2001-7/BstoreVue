@@ -53,6 +53,8 @@ const handleApplyforVendor = async () => {
     const response = await applyForVendor();
    
     alert('تم تقديم طلبك بنجاح! ✅');
+    // Refresh auth to update vendor status
+    await auth.checkAuth();
     return response;
     
   } catch (err) { 
